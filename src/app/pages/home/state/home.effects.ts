@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
 import { catchError, map, mergeMap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 
 import { WeatherService } from 'src/app/shared/services/weather.service';
 import * as fromHomeActions from './home.actions';
