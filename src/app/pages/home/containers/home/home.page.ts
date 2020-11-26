@@ -25,7 +25,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   text: string;
 
-  private componentOnDestroyed$ = new Subject();
+  private componentDestroyed$ = new Subject();
 
   constructor(private store: Store) { }
 
@@ -35,7 +35,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.store
       .pipe(
         select(fromHomeSelectors.selectCurrentWeather),
-        takeUntil(this.componentOnDestroyed$),
+        takeUntil(this.componentDestroyed$),
       )
       .subscribe(value => this.cityWeather = value);
     this.loading$ = this.store.pipe(select(fromHomeSelectors.selectCurrentWeatherLoading));
@@ -43,8 +43,8 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.componentOnDestroyed$.next();
-    this.componentOnDestroyed$.unsubscribe();
+    this.componentDestroyed$.next();
+    this.componentDestroyed$.unsubscribe();
   }
 
   doSearch() {
@@ -58,6 +58,7 @@ export class HomePage implements OnInit, OnDestroy {
     bookmark.name = this.cityWeather.city.name;
     bookmark.coord = this.cityWeather.city.coord;
     bookmark.country = this.cityWeather.city.country;
+    this.store.dispatch(fromHomeActions.toggleBookmark({ entity: bookmark }));
   }
 
 }
