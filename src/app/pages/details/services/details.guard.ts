@@ -11,6 +11,7 @@ export class DetailsGuard implements CanActivate {
         if (route.queryParams.lat && route.queryParams.lon) {
             return true;
         }
+
         return this.router.createUrlTree(['']);
     }
 }
