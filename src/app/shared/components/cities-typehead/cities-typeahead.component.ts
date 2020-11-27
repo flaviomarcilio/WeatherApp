@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
+import { Component, OnInit, Optional, Self } from '@angular/core';
+import { ControlValueAccessor, NgControl } from '@angular/forms';
 
 import { Observable, Subscriber } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
 
 import { CityTypeaheadItem } from '../../models/city-typeahead-item';
 import { CitiesService } from '../../services/cities.service';
@@ -12,12 +13,19 @@ import { CitiesService } from '../../services/cities.service';
   templateUrl: './cities-typeahead.component.html',
   styleUrls: ['./cities-typeahead.component.scss']
 })
-export class CitiesTypeaheadComponent implements OnInit {
+export class CitiesTypeaheadComponent implements OnInit, ControlValueAccessor {
 
   dataSource$: Observable<CityTypeaheadItem[]>;
   search: string;
 
-  constructor(private citiesServices: CitiesService) { }
+  disabled: boolean;
+  private onChange: (value: CityTypeaheadItem) => void;
+  private onTouched: () => void;
+
+  constructor(private citiesServices: CitiesService,
+              @Optional() @Self() public control: NgControl) {
+    control.valueAccessor = this;
+  }
 
   ngOnInit() {
     this.dataSource$ = new Observable(
@@ -29,7 +37,22 @@ export class CitiesTypeaheadComponent implements OnInit {
   }
 
   onSelected(match: TypeaheadMatch) {
-    console.log(match.item);
+    this.onTouched();
+    this.onChange(match.item);
   }
+
+  registerOnChange(fn: (value: CityTypeaheadItem) => void) {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void) {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean) {
+    this.disabled = isDisabled;
+  }
+
+  writeValue() {  }
 
 }
