@@ -1,1 +1,21 @@
-<p>details works!</p>
+<div class="container-fluid">
+
+    <fn-loader *ngIf="loading$ | async"></fn-loader>
+
+    <div>
+        <div *ngIf="!(loading$ | async) && !(error$ | async)">
+        <h1>{{ (details$ | async).city.name }}, {{ (details$ | async).city.country }}</h1>
+
+        <div class="card current-card">
+            <fn-detailed-weather [weather]="(details$ | async).current"></fn-detailed-weather>
+        </div>
+
+        <fn-daily-weather *ngFor="let daily of (details$ | async).daily"
+                            [dailyWeather]="daily"
+                            [timeZone]="(details$ | async).city.timeZone"></fn-daily-weather>
+    </div>
+
+        <div *ngIf="error$ | async">Erro</div>
+    </div>
+
+</div>
