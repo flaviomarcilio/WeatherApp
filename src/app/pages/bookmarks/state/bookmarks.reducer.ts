@@ -4,11 +4,11 @@ import { Bookmark } from 'src/app/shared/models/bookmark.model';
 import * as fromHomeActions from '../../home/state/home.actions';
 import * as fromBookmarkActions from './bookmarks.actions';
 
-export interface BookmarkState {
+export interface BookmarksState {
     list: Bookmark[];
 }
 
-export const bookmarkInitialState: BookmarkState = {
+export const bookmarkInitialState: BookmarksState = {
     list: [],
 };
 
@@ -22,10 +22,13 @@ const reducer = createReducer(
         ...state,
         list: state.list.filter(b => b.id !== id),
     })),
-
+    on(fromBookmarkActions.updateBookmarkList, (state, { list }) => ({
+        ...state,
+        list,
+    })),
 );
 
-export function bookmarkReducer(state: BookmarkState | undefined, action: Action) {
+export function bookmarkReducer(state: BookmarksState | undefined, action: Action) {
     return reducer(state, action);
 }
 
