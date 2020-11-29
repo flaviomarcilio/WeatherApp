@@ -9,10 +9,12 @@ import { map, takeUntil } from 'rxjs/operators';
 import { Bookmark } from 'src/app/shared/models/bookmark.model';
 import { CityWeather } from 'src/app/shared/models/weather.model';
 import { CityTypeaheadItem } from 'src/app/shared/models/city-typeahead-item';
+import { Units } from 'src/app/shared/models/units.enum';
+import { UnitSelectorComponent } from '../unit-selector/unit-selector.component';
 import * as fromHomeActions from '../../state/home.actions';
 import * as fromHomeSelectors from '../../state/home.selectors';
 import * as fromBookmarksSelectors from '../../../bookmarks/state/bookmarks.selectors';
-import { UnitSelectorComponent } from '../unit-selector/unit-selector.component';
+import * as fromConfigSelectors from 'src/app/shared/state/config/config.selectors';
 
 @Component({
   selector: 'fn-home',
@@ -32,6 +34,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   searchControl: FormControl;
   searchControlWithAutocomplete: FormControl;
+
+  unit$: Observable<Units>;
 
   private componentDestroyed$ = new Subject();
 
@@ -72,6 +76,8 @@ export class HomePage implements OnInit, OnDestroy {
             return false;
           }),
         );
+
+    this.unit$ = this.store.pipe(select(fromConfigSelectors.selectUnitConfig));
 
     this.setupPortal();
   }

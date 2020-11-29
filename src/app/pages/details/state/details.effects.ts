@@ -36,7 +36,6 @@ export class DetailsEffects {
         )
     );
 
-
     constructor(private actions$: Actions,
                 private store: Store<AppState>,
                 private weatherService: WeatherService) { }

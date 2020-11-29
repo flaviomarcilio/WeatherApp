@@ -17,4 +17,3 @@ export const selectCurrentWeatherError = createSelector(
     selectHomeState,
     (homeState: HomeState) => homeState.error,
 );
-
