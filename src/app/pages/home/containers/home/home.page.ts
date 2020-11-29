@@ -1,5 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ApplicationRef, Component, ComponentFactoryResolver, Injector, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { PortalOutlet, DomPortalOutlet, ComponentPortal } from '@angular/cdk/portal';
 
 import { select, Store } from '@ngrx/store';
 import { combineLatest, Observable, Subject } from 'rxjs';
@@ -11,6 +12,7 @@ import { CityTypeaheadItem } from 'src/app/shared/models/city-typeahead-item';
 import * as fromHomeActions from '../../state/home.actions';
 import * as fromHomeSelectors from '../../state/home.selectors';
 import * as fromBookmarksSelectors from '../../../bookmarks/state/bookmarks.selectors';
+import { UnitSelectorComponent } from '../unit-selector/unit-selector.component';
 
 @Component({
   selector: 'fn-home',
@@ -33,7 +35,12 @@ export class HomePage implements OnInit, OnDestroy {
 
   private componentDestroyed$ = new Subject();
 
-  constructor(private store: Store) { }
+  private portalOutlet: PortalOutlet;
+
+  constructor(private store: Store,
+              private componentFactoryResolver: ComponentFactoryResolver,
+              private appRef: ApplicationRef,
+              private injector: Injector) { }
 
   ngOnInit() {
     this.searchControl = new FormControl('', Validators.required);
@@ -65,12 +72,15 @@ export class HomePage implements OnInit, OnDestroy {
             return false;
           }),
         );
+
+    this.setupPortal();
   }
 
   ngOnDestroy() {
     this.componentDestroyed$.next();
     this.componentDestroyed$.unsubscribe();
     this.store.dispatch(fromHomeActions.clearHomeState());
+    this.portalOutlet.detach();
   }
 
   doSearch() {
@@ -85,6 +95,17 @@ export class HomePage implements OnInit, OnDestroy {
     bookmark.coord = this.cityWeather.city.coord;
     bookmark.country = this.cityWeather.city.country;
     this.store.dispatch(fromHomeActions.toggleBookmark({ entity: bookmark }));
+  }
+
+  private setupPortal() {
+    const el = document.querySelector('#navbar-portal-outlet');
+    this.portalOutlet = new DomPortalOutlet(
+      el,
+      this.componentFactoryResolver,
+      this.appRef,
+      this.injector,
+    );
+    this.portalOutlet.attach(new ComponentPortal(UnitSelectorComponent));
   }
 
 }
